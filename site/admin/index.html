@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin | Éire Láidir</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+@font-face{font-family:"Marcellus";font-weight:400;font-display:swap;src:url("/fonts/marcellus-400.woff") format("woff")}
+@font-face{font-family:"Hanken Grotesk";font-weight:100 900;font-display:swap;src:url("/fonts/hanken-grotesk-var.woff") format("woff")}
+/* Admin: a calm, dark working surface in the party's colours; content first, controls large enough for phones */
+:root{
+  --ink:#0A0D0B;--panel:#111713;--panel-2:#18201B;--line:rgba(217,169,60,.2);--line-2:rgba(239,232,216,.12);
+  --gold:#D9A93C;--gold-hi:#F2CF74;--cream:#EFE8D8;--mute:#A6A18F;--green:#3FA368;--red:#E5735B;
+  --display:"Marcellus",Georgia,serif;--body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--cream);font:400 16px/1.55 var(--body)}
+a{color:var(--gold-hi)}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.15}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;padding:0 1.1rem;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--cream);font-weight:600;font-size:.92rem;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--gold)}
+.btn-gold{background:linear-gradient(180deg,var(--gold-hi),var(--gold));color:#17110A;border-color:transparent}
+.btn-danger{border-color:rgba(229,115,91,.5);color:#F3A493}
+.btn-sm{min-height:38px;padding:0 .8rem;font-size:.85rem}
+.btn[disabled]{opacity:.55;cursor:progress}
+label{display:block;font-size:.82rem;font-weight:600;letter-spacing:.03em;margin-bottom:.35rem}
+.hint{font-size:.82rem;color:var(--mute);margin:.3rem 0 0}
+input[type=text],input[type=email],input[type=password],input[type=url],textarea,select{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:4px;padding:.75rem .85rem;min-height:46px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+textarea{resize:vertical;line-height:1.6}
+.field{margin-bottom:1.1rem}
+.err{color:#F3A493;font-size:.88rem;min-height:1.2em;margin:.4rem 0 0}
+
+/* sign-in */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px));background:radial-gradient(ellipse at 50% 0,rgba(217,169,60,.12),transparent 60%),var(--ink)}
+.auth-card{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2rem}
+.auth-card img{display:block;height:84px;width:auto;margin:0 auto 1rem}
+.auth-card h1{text-align:center;font-size:1.7rem;margin-bottom:.4rem}
+.auth-card .sub{text-align:center;color:var(--mute);font-size:.92rem;margin:0 0 1.6rem}
+.auth-card .btn{width:100%}
+.linkbtn{background:none;border:0;color:var(--gold-hi);cursor:pointer;padding:.6rem 0;text-decoration:underline;font-size:.9rem}
+.backsite{display:block;text-align:center;margin-top:1rem;font-size:.88rem;color:var(--mute)}
+
+/* app shell */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:1rem;padding:.6rem max(16px,env(safe-area-inset-right,0px)) .6rem max(16px,env(safe-area-inset-left,0px));background:rgba(10,13,11,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.top img{height:40px;width:auto}
+.top .title{font-family:var(--display);font-size:1.15rem;color:var(--gold-hi)}
+.top .who{margin-left:auto;font-size:.82rem;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30vw}
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 61px)}
+.side{border-right:1px solid var(--line);padding:1.2rem .8rem;display:flex;flex-direction:column;gap:.25rem}
+.tab{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;background:none;border:0;border-radius:4px;padding:.75rem .9rem;color:var(--mute);cursor:pointer;font-weight:500;min-height:46px}
+.tab svg{width:18px;height:18px;flex:none}
+.tab:hover{color:var(--cream);background:var(--panel)}
+.tab[aria-selected=true]{color:var(--cream);background:var(--panel-2);box-shadow:inset 2px 0 0 var(--gold)}
+.main{padding:1.8rem max(16px,2.2vw) 4rem;min-width:0}
+.head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.4rem}
+.head h2{font-size:1.9rem}
+.panel{background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:1.3rem}
+
+/* posts list */
+.plist{display:grid;gap:.6rem}
+.prow{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:1rem;align-items:center;background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:.7rem;cursor:pointer}
+.prow:hover{border-color:var(--line)}
+.thumb{width:72px;height:54px;border-radius:3px;background:var(--panel-2) center/cover no-repeat}
+.prow h3{font-family:var(--body);font-weight:600;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:.82rem;color:var(--mute);display:flex;flex-wrap:wrap;gap:.3rem .7rem;align-items:center;margin-top:.2rem}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .5rem;border-radius:99px}
+.pill.pub{background:rgba(63,163,104,.18);color:#7DD3A0}
+.pill.draft{background:rgba(217,169,60,.15);color:var(--gold-hi)}
+.empty{padding:2.4rem 1.2rem;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:6px}
+.empty b{display:block;color:var(--cream);font-family:var(--display);font-weight:400;font-size:1.4rem;margin-bottom:.4rem}
+
+/* editor */
+.edit-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:1.4rem;align-items:start}
+.cover{border:1px dashed var(--line);border-radius:6px;aspect-ratio:16/10;display:grid;place-items:center;background:var(--panel-2) center/cover no-repeat;color:var(--mute);text-align:center;font-size:.9rem;cursor:pointer}
+.cover.has{border-style:solid}
+.toolbar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.4rem}
+.toolbar button{min-height:38px;min-width:42px;padding:0 .6rem;background:var(--panel-2);border:1px solid var(--line-2);border-radius:4px;cursor:pointer;font-weight:600}
+.toolbar button:hover{border-color:var(--gold)}
+#body{min-height:340px;font-size:1rem}
+.preview{background:#0d110e;border:1px solid var(--line-2);border-radius:4px;padding:1.1rem 1.3rem;min-height:340px;color:#d9d2c0}
+.preview h2{font-size:1.5rem;margin:1rem 0 .5rem;color:var(--cream)} .preview h3{font-size:1.2rem;margin:.9rem 0 .4rem;color:var(--cream)}
+.preview img{max-width:100%;height:auto;border-radius:4px} .preview figure{margin:1rem 0} .preview figcaption{font-size:.85rem;color:var(--mute)}
+.preview blockquote{margin:1rem 0;padding-left:1rem;border-left:3px solid var(--gold);font-family:var(--display);font-size:1.15rem}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;padding:.8rem;border:1px solid rgba(229,115,91,.45);border-radius:4px;background:rgba(229,115,91,.08);margin-top:.8rem}
+.side-box{display:grid;gap:1rem}
+.status-line{font-size:.85rem;color:var(--mute)}
+.seg{display:flex;border:1px solid var(--line-2);border-radius:4px;overflow:hidden}
+.seg button{flex:1;min-height:40px;background:none;border:0;cursor:pointer;color:var(--mute);font-weight:600}
+.seg button[aria-pressed=true]{background:var(--panel-2);color:var(--cream)}
+
+/* photos */
+.drop{border:1px dashed var(--line);border-radius:6px;padding:1.6rem;text-align:center;color:var(--mute);margin-bottom:1rem}
+.drop.over{border-color:var(--gold);background:rgba(217,169,60,.06)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem}
+.mcard{background:var(--panel);border:1px solid var(--line-2);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.mcard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--panel-2)}
+.mcard .in{padding:.6rem;display:grid;gap:.45rem}
+.mcard input{min-height:38px;padding:.45rem .6rem;font-size:.85rem}
+.mcard .row{display:flex;flex-wrap:wrap;gap:.4rem}
+.mcard .row .btn{flex:1 1 auto;padding:0 .6rem}
+.mcard.pick{cursor:pointer}
+.mcard.pick:hover{border-color:var(--gold)}
+.uploading{font-size:.85rem;color:var(--gold-hi);margin:.4rem 0}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:grid;place-items:center;padding:16px}
+.modal-in{width:min(900px,100%);max-height:88vh;overflow:auto;background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:1.2rem}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--cream);color:#17110A;padding:.75rem 1.1rem;border-radius:4px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.bad{background:#F3A493}
+
+.note{font-size:.85rem;color:var(--mute);border-left:2px solid var(--gold);padding:.2rem 0 .2rem .8rem;margin:0 0 1rem}
+.notice-preview{background:#101612;border:1px solid var(--line);font-size:.85rem;text-align:center;padding:.6rem;border-radius:4px;color:var(--mute)}
+.switch{display:flex;align-items:center;gap:.7rem;min-height:46px;cursor:pointer}
+.switch input{width:22px;height:22px;accent-color:var(--gold)}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;right:0;bottom:0;z-index:30;flex-direction:row;border-right:0;border-top:1px solid var(--line);background:rgba(10,13,11,.97);padding:.35rem max(8px,env(safe-area-inset-left,0px)) calc(.35rem + env(safe-area-inset-bottom,0px));gap:.2rem}
+  .tab{flex:1;flex-direction:column;gap:.15rem;font-size:.7rem;padding:.45rem .2rem;justify-content:center;text-align:center;min-height:54px}
+  .tab[aria-selected=true]{box-shadow:inset 0 2px 0 var(--gold)}
+  .main{padding:1.2rem 16px 6.5rem}
+  .edit-grid{grid-template-columns:1fr}
+  .head h2{font-size:1.5rem}
+  .top .who{display:none}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .prow{grid-template-columns:56px minmax(0,1fr)}
+  .prow .thumb{width:56px;height:44px}
+  .prow .go{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ Sign in / set password ============ -->
+<section class="auth" id="auth" hidden>
+  <div class="auth-card">
+    <img src="/logo-420.webp" alt="Éire Láidir" width="420" height="369">
+    <div id="f-login">
+      <h1>Admin sign in</h1>
+      <p class="sub">For Éire Láidir website administrators.</p>
+      <form id="loginForm" novalidate>
+        <div class="field"><label for="le">Email</label><input id="le" type="email" autocomplete="username" required></div>
+        <div class="field"><label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password" required></div>
+        <button class="btn btn-gold" type="submit">Sign in</button>
+        <p class="err" id="loginErr" role="alert"></p>
+      </form>
+      <button class="linkbtn" type="button" data-auth="forgot">Forgot your password?</button>
+    </div>
+    <div id="f-forgot" hidden>
+      <h1>Reset password</h1>
+      <p class="sub">We’ll email you a link to set a new password.</p>
+      <form id="forgotForm" novalidate>
+        <div class="field"><label for="fe">Email</label><input id="fe" type="email" autocomplete="username" required></div>
+        <button class="btn btn-gold" type="submit">Send reset link</button>
+        <p class="err" id="forgotMsg" role="status"></p>
+      </form>
+      <button class="linkbtn" type="button" data-auth="login">Back to sign in</button>
+    </div>
+    <div id="f-setpw" hidden>
+      <h1 id="setTitle">Set your password</h1>
+      <p class="sub" id="setSub">Choose a password to finish setting up your admin account.</p>
+      <form id="setForm" novalidate>
+        <div class="field"><label for="np">New password</label><input id="np" type="password" autocomplete="new-password" minlength="12" required><p class="hint">At least 12 characters. A few random words works well.</p></div>
+        <div class="field"><label for="np2">Confirm password</label><input id="np2" type="password" autocomplete="new-password" required></div>
+        <button class="btn btn-gold" type="submit">Save password and sign in</button>
+        <p class="err" id="setErr" role="alert"></p>
+      </form>
+    </div>
+    <a class="backsite" href="/">← Back to the website</a>
+  </div>
+</section>
+
+<!-- ============ Admin app ============ -->
+<div id="app" hidden>
+  <header class="top">
+    <img src="/logo-420.webp" alt="" width="420" height="369"><span class="title">Admin</span>
+    <span class="who" id="who"></span>
+    <a class="btn btn-sm" href="/" target="_blank" rel="noopener">View site</a>
+    <button class="btn btn-sm" type="button" id="signout">Sign out</button>
+  </header>
+  <div class="shell">
+    <nav class="side" role="tablist" aria-label="Admin sections">
+      <button class="tab" role="tab" data-view="posts" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Posts</button>
+      <button class="tab" role="tab" data-view="photos" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Photos</button>
+      <button class="tab" role="tab" data-view="notice" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10v4h3l6 4V6L7 10H4zM17 9a4 4 0 010 6"/></svg>Site notice</button>
+      <button class="tab" role="tab" data-view="account" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Account</button>
+    </nav>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-in">
+    <div class="modal-head"><h2 id="modalTitle">Choose a photo</h2><button class="btn btn-sm" type="button" id="modalClose">Close</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script type="module">
+import { renderMarkdown, escapeHtml as esc } from "/admin/md.mjs";
+
+const d = document, $ = (s, el = d) => el.querySelector(s), $$ = (s, el = d) => [...el.querySelectorAll(s)];
+const ID = "/.netlify/identity", KEY = "el_admin_session";
+
+/* ---------- session (Netlify Identity) ---------- */
+let session = null;
+try { session = JSON.parse(localStorage.getItem(KEY) || "null"); } catch {}
+const saveSession = (s) => { session = s; try { s ? localStorage.setItem(KEY, JSON.stringify(s)) : localStorage.removeItem(KEY); } catch {} };
+const fromTokens = (t, email) => ({ access: t.access_token, refresh: t.refresh_token, exp: Date.now() + (t.expires_in || 3600) * 1000, email });
+
+async function idFetch(path, opts = {}) {
+  const r = await fetch(ID + path, opts);
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const m = body.error_description || body.msg || body.error || "";
+    throw new Error(/invalid|credentials/i.test(m) ? "That email and password don’t match." : (m || "Something went wrong. Please try again."));
+  }
+  return body;
+}
+const form = (o) => new URLSearchParams(o).toString();
+async function login(email, password) {
+  const t = await idFetch("/token", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: form({ grant_type: "password", username: email, password }) });
+  saveSession(fromTokens(t, email));
+}
+async function refresh() {
+  if (!session?.refresh) throw new Error("expired");
+  const t = await idFetch("/token", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: form({ grant_type: "refresh_token", refresh_token: session.refresh }) });
+  saveSession(fromTokens(t, session.email));
+}
+async function token() {
+  if (!session) throw new Error("expired");
+  if (Date.now() > session.exp - 60000) await refresh();
+  return session.access;
+}
+async function api(path, opts = {}, retry = true) {
+  let tk;
+  try { tk = await token(); } catch { return signedOut("Your session has expired. Please sign in again."); }
+  const r = await fetch(path, { ...opts, headers: { ...(opts.headers || {}), authorization: "Bearer " + tk } });
+  if (r.status === 401 && retry) { try { await refresh(); return api(path, opts, false); } catch { return signedOut("Your session has expired. Please sign in again."); } }
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(body.error || "Something went wrong. Please try again.");
+  return body;
+}
+
+/* ---------- ui helpers ---------- */
+let toastT;
+function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classList.toggle("bad", !!bad); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 3200); }
+const fmt = (iso) => iso ? new Date(iso).toLocaleDateString("en-IE", { day: "numeric", month: "short", year: "numeric" }) : "";
+const busy = async (btn, label, fn) => { const old = btn.textContent; btn.disabled = true; btn.textContent = label; try { return await fn(); } finally { btn.disabled = false; btn.textContent = old; } };
+let dirty = false;
+window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- auth screens ---------- */
+function showAuth(which, msg) {
+  $("#app").hidden = true; $("#auth").hidden = false;
+  ["login", "forgot", "setpw"].forEach((k) => ($("#f-" + k).hidden = k !== which));
+  if (msg) $(which === "login" ? "#loginErr" : "#setErr").textContent = msg;
+  (which === "login" ? $("#le") : which === "forgot" ? $("#fe") : $("#np")).focus();
+}
+function signedOut(msg) { saveSession(null); dirty = false; showAuth("login", msg); throw new Error("signed-out"); }
+d.addEventListener("click", (e) => { const b = e.target.closest("[data-auth]"); if (b) showAuth(b.dataset.auth); });
+
+$("#loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); const err = $("#loginErr"); err.textContent = "";
+  const email = $("#le").value.trim(), pw = $("#lp").value;
+  if (!email || !pw) { err.textContent = "Enter your email and password."; return; }
+  await busy(e.submitter || $("#loginForm button"), "Signing in…", async () => {
+    try { await login(email, pw); $("#lp").value = ""; startApp(); } catch (x) { err.textContent = x.message; }
+  });
+});
+$("#forgotForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); const m = $("#forgotMsg"); m.textContent = "";
+  const email = $("#fe").value.trim(); if (!email) { m.textContent = "Enter your email."; return; }
+  await busy($("#forgotForm button"), "Sending…", async () => {
+    try { await idFetch("/recover", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email }) }); } catch {}
+    m.textContent = "If that email has an admin account, a reset link is on its way. Check your inbox.";
+  });
+});
+
+// Invite and password-reset links arrive as #invite_token=… or #recovery_token=…
+let pending = null;
+(function readHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get("invite_token")) pending = { type: "signup", token: h.get("invite_token") };
+  else if (h.get("recovery_token")) pending = { type: "recovery", token: h.get("recovery_token") };
+  else if (h.get("confirmation_token")) pending = { type: "signup", token: h.get("confirmation_token"), confirm: true };
+  if (pending) history.replaceState(null, "", location.pathname);
+})();
+$("#setForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); const err = $("#setErr"); err.textContent = "";
+  const a = $("#np").value, b = $("#np2").value;
+  if (a.length < 12) { err.textContent = "Use at least 12 characters."; return; }
+  if (a !== b) { err.textContent = "The two passwords don’t match."; return; }
+  await busy($("#setForm button"), "Saving…", async () => {
+    try {
+      if (pending.type === "signup") {
+        const t = await idFetch("/verify", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: pending.token, type: "signup", password: a }) });
+        saveSession(fromTokens(t, ""));
+      } else {
+        const t = await idFetch("/verify", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: pending.token, type: "recovery" }) });
+        saveSession(fromTokens(t, ""));
+        await idFetch("/user", { method: "PUT", headers: { "content-type": "application/json", authorization: "Bearer " + session.access }, body: JSON.stringify({ password: a }) });
+      }
+      const u = await idFetch("/user", { headers: { authorization: "Bearer " + session.access } });
+      saveSession({ ...session, email: u.email });
+      pending = null; startApp(); toast("Password saved. You’re signed in.");
+    } catch (x) { err.textContent = /expired|invalid|not found/i.test(x.message) ? "This link has expired or was already used. Ask for a new one." : x.message; }
+  });
+});
+
+/* ---------- app ---------- */
+const views = { posts: viewPosts, photos: viewPhotos, notice: viewNotice, account: viewAccount };
+let current = "posts";
+async function startApp() {
+  $("#auth").hidden = true; $("#app").hidden = false; $("#who").textContent = session?.email || "";
+  go(current);
+}
+function go(v, ...args) {
+  if (dirty && !confirmLeave()) return;
+  dirty = false; current = v;
+  $$(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+  views[v](...args).catch((e) => { if (e.message !== "signed-out") toast(e.message, true); });
+  window.scrollTo(0, 0);
+}
+let leaveOk = false;
+function confirmLeave() { if (leaveOk) { leaveOk = false; return true; } toast("You have unsaved changes. Save them, or press again to leave without saving.", true); leaveOk = true; setTimeout(() => (leaveOk = false), 4000); return false; }
+$$(".tab").forEach((t) => t.addEventListener("click", () => go(t.dataset.view)));
+$("#signout").addEventListener("click", async () => {
+  try { await fetch(ID + "/logout", { method: "POST", headers: { authorization: "Bearer " + session.access } }); } catch {}
+  saveSession(null); dirty = false; showAuth("login"); toast("Signed out.");
+});
+
+/* ----- Posts ----- */
+async function viewPosts() {
+  const m = $("#main");
+  m.innerHTML = `<div class="head"><h2>Posts</h2><button class="btn btn-gold" id="newPost">New post</button></div><div id="plist" class="plist"><p class="status-line">Loading posts…</p></div>`;
+  $("#newPost").onclick = () => go("posts_edit");
+  const { items } = await api("/api/posts?all=1");
+  const box = $("#plist");
+  if (!items.length) { box.innerHTML = `<div class="empty"><b>No posts yet</b>Write your first news update or blog post. It will appear on the website’s News page when you publish it.</div>`; return; }
+  box.innerHTML = items.map((p) => `<div class="prow" tabindex="0" role="button" data-id="${esc(p.id)}">
+    <span class="thumb" style="${p.cover ? `background-image:url('/media/${esc(p.cover)}')` : ""}"></span>
+    <div style="min-width:0"><h3>${esc(p.title)}</h3><div class="meta"><span class="pill ${p.status === "published" ? "pub" : "draft"}">${p.status === "published" ? "Published" : "Draft"}</span><span>${esc(p.category)}</span><span>${p.status === "published" ? "Published " + fmt(p.publishedAt) : "Edited " + fmt(p.updatedAt)}</span></div></div>
+    <span class="btn btn-sm go">Edit</span></div>`).join("");
+  $$(".prow", box).forEach((r) => { const open = () => go("posts_edit", r.dataset.id); r.onclick = open; r.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } }; });
+}
+views.posts_edit = async (id) => {
+  $$(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.view === "posts")));
+  const m = $("#main");
+  m.innerHTML = `<p class="status-line">Loading…</p>`;
+  const p = id ? await api(`/api/posts/${encodeURIComponent(id)}`) : { title: "", category: "News", excerpt: "", body: "", cover: "", coverAlt: "", status: "draft" };
+  const pub = p.status === "published";
+  m.innerHTML = `
+  <div class="head"><h2>${id ? "Edit post" : "New post"}</h2><button class="btn btn-sm" id="back">← All posts</button></div>
+  <div class="edit-grid">
+    <div class="panel">
+      <div class="field"><label for="title">Title</label><input id="title" type="text" maxlength="140" value="${esc(p.title)}" placeholder="e.g. Éire Láidir launches in Kerry"></div>
+      <div class="field"><label for="excerpt">Summary <span class="hint" style="display:inline">(optional, shown on the News page and in Google)</span></label><textarea id="excerpt" rows="2" maxlength="300">${esc(p.excerpt || "")}</textarea></div>
+      <div class="field">
+        <label for="body">Post</label>
+        <div class="toolbar" role="toolbar" aria-label="Formatting">
+          <button type="button" data-md="h2" title="Heading">H</button>
+          <button type="button" data-md="b" title="Bold"><b>B</b></button>
+          <button type="button" data-md="i" title="Italic"><i>I</i></button>
+          <button type="button" data-md="ul" title="Bullet list">• List</button>
+          <button type="button" data-md="quote" title="Quote">“ ”</button>
+          <button type="button" data-md="link" title="Link">Link</button>
+          <button type="button" data-md="img" title="Photo">Photo</button>
+        </div>
+        <div class="seg" style="margin-bottom:.5rem;max-width:260px"><button type="button" aria-pressed="true" data-mode="write">Write</button><button type="button" aria-pressed="false" data-mode="preview">Preview</button></div>
+        <textarea id="body" rows="16">${esc(p.body || "")}</textarea>
+        <div class="preview" id="preview" hidden></div>
+        <p class="hint">Leave a blank line between paragraphs. Use the buttons for headings, bold, lists, links and photos.</p>
+      </div>
+    </div>
+    <div class="side-box">
+      <div class="panel">
+        <label>Status</label>
+        <p class="status-line" style="margin:.1rem 0 .8rem"><span class="pill ${pub ? "pub" : "draft"}">${pub ? "Published" : "Draft"}</span> ${pub ? `<a href="/news/${esc(p.slug)}" target="_blank" rel="noopener">View on site</a>` : "Only admins can see drafts."}</p>
+        <div class="actions" style="margin-top:0">
+          ${pub ? `<button class="btn btn-gold" id="save">Update</button><button class="btn" id="unpub">Unpublish</button>` : `<button class="btn btn-gold" id="publish">Publish</button><button class="btn" id="save">Save draft</button>`}
+        </div>
+        ${id ? `<button class="btn btn-danger btn-sm" id="del" style="margin-top:1rem">Delete post</button><div id="delBox"></div>` : ""}
+      </div>
+      <div class="panel">
+        <div class="field"><label for="cat">Category</label><select id="cat">${["News", "Blog", "Update", "Press release"].map((c) => `<option${c === p.category ? " selected" : ""}>${c}</option>`).join("")}</select></div>
+        <label>Cover photo</label>
+        <div class="cover ${p.cover ? "has" : ""}" id="cover" role="button" tabindex="0" style="${p.cover ? `background-image:url('/media/${esc(p.cover)}')` : ""}">${p.cover ? "" : "Choose a cover photo"}</div>
+        <div class="row" style="display:flex;gap:.4rem;margin-top:.5rem"><button class="btn btn-sm" id="pickCover" type="button">${p.cover ? "Change" : "Choose"}</button>${p.cover ? `<button class="btn btn-sm" id="rmCover" type="button">Remove</button>` : ""}</div>
+        <div class="field" style="margin-top:.8rem"><label for="coverAlt">Describe the cover photo</label><input id="coverAlt" type="text" maxlength="200" value="${esc(p.coverAlt || "")}" placeholder="e.g. Volunteers at the Tralee launch"><p class="hint">Read aloud by screen readers.</p></div>
+      </div>
+    </div>
+  </div>`;
+  let cover = p.cover || "";
+  const markDirty = () => (dirty = true);
+  $$("input,textarea,select", m).forEach((el) => el.addEventListener("input", markDirty));
+  $("#back").onclick = () => go("posts");
+  const body = $("#body"), prev = $("#preview");
+  $$("[data-mode]").forEach((b) => b.onclick = () => {
+    const pv = b.dataset.mode === "preview";
+    $$("[data-mode]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    prev.hidden = !pv; body.hidden = pv; if (pv) prev.innerHTML = renderMarkdown(body.value) || `<p class="hint">Nothing to preview yet.</p>`;
+  });
+  const wrap = (before, after = before, ph = "text") => {
+    const s = body.selectionStart, e = body.selectionEnd, sel = body.value.slice(s, e) || ph;
+    body.setRangeText(before + sel + after, s, e, "end"); body.focus(); markDirty();
+  };
+  const linePrefix = (pre) => {
+    const s = body.selectionStart, start = body.value.lastIndexOf("\n", s - 1) + 1;
+    body.setRangeText(pre, start, start, "end"); body.focus(); markDirty();
+  };
+  $$("[data-md]").forEach((b) => b.onclick = async () => {
+    const k = b.dataset.md;
+    if (k === "b") wrap("**"); else if (k === "i") wrap("*");
+    else if (k === "h2") linePrefix("## "); else if (k === "ul") linePrefix("- "); else if (k === "quote") linePrefix("> ");
+    else if (k === "link") { const s = body.selectionStart, e = body.selectionEnd, txt = body.value.slice(s, e) || "link text"; body.setRangeText(`[${txt}](https://)`, s, e, "end"); body.focus(); markDirty(); }
+    else if (k === "img") { const ph = await pickPhoto(); if (ph) { const s = body.selectionStart; body.setRangeText(`\n\n![${ph.alt || ""}](/media/${ph.key})\n\n`, s, s, "end"); body.focus(); markDirty(); } }
+  });
+  const setCover = (k) => { cover = k; const c = $("#cover"); c.style.backgroundImage = k ? `url('/media/${k}')` : ""; c.classList.toggle("has", !!k); c.textContent = k ? "" : "Choose a cover photo"; markDirty(); };
+  const chooseCover = async () => { const ph = await pickPhoto(); if (ph) { setCover(ph.key); if (!$("#coverAlt").value && ph.alt) $("#coverAlt").value = ph.alt; } };
+  $("#pickCover").onclick = chooseCover; $("#cover").onclick = chooseCover; $("#cover").onkeydown = (e) => { if (e.key === "Enter") chooseCover(); };
+  if ($("#rmCover")) $("#rmCover").onclick = () => setCover("");
+
+  const data = (status) => ({ title: $("#title").value, excerpt: $("#excerpt").value, body: body.value, category: $("#cat").value, cover, coverAlt: $("#coverAlt").value, status });
+  async function save(btn, status, msg) {
+    if (!$("#title").value.trim()) { toast("Add a title first.", true); $("#title").focus(); return; }
+    await busy(btn, "Saving…", async () => {
+      const saved = await api(id ? `/api/posts/${encodeURIComponent(id)}` : "/api/posts", { method: id ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data(status)) });
+      dirty = false; toast(msg); go("posts_edit", saved.id);
+    }).catch((e) => e.message !== "signed-out" && toast(e.message, true));
+  }
+  if ($("#publish")) $("#publish").onclick = (e) => save(e.currentTarget, "published", "Published. It’s live on the News page.");
+  if ($("#save")) $("#save").onclick = (e) => save(e.currentTarget, pub ? "published" : "draft", pub ? "Updated." : "Draft saved.");
+  if ($("#unpub")) $("#unpub").onclick = (e) => save(e.currentTarget, "draft", "Unpublished. It’s now a draft.");
+  if ($("#del")) $("#del").onclick = () => {
+    $("#delBox").innerHTML = `<div class="confirm"><span>Delete this post? This can’t be undone.</span><button class="btn btn-danger btn-sm" id="delYes">Delete</button><button class="btn btn-sm" id="delNo">Keep it</button></div>`;
+    $("#delNo").onclick = () => ($("#delBox").innerHTML = "");
+    $("#delYes").onclick = (e) => busy(e.currentTarget, "Deleting…", async () => { await api(`/api/posts/${encodeURIComponent(id)}`, { method: "DELETE" }); dirty = false; toast("Post deleted."); go("posts"); }).catch((x) => toast(x.message, true));
+  };
+};
+
+/* ----- Photos ----- */
+async function resize(file) {
+  const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const max = 1800, sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * sc), h = Math.round(bmp.height * sc);
+  const c = Object.assign(d.createElement("canvas"), { width: w, height: h });
+  c.getContext("2d").drawImage(bmp, 0, 0, w, h);
+  let blob = await new Promise((r) => c.toBlob(r, "image/webp", 0.84));
+  if (!blob || blob.type !== "image/webp") blob = await new Promise((r) => c.toBlob(r, "image/jpeg", 0.86));
+  return { blob, w, h };
+}
+async function uploadFiles(files, status) {
+  const out = [];
+  for (const [i, f] of [...files].entries()) {
+    if (!/^image\//.test(f.type)) { toast(`${f.name} isn’t an image.`, true); continue; }
+    status.textContent = `Uploading ${i + 1} of ${files.length}…`;
+    const { blob, w, h } = await resize(f);
+    const tk = await token();
+    const r = await fetch("/api/media", { method: "POST", headers: { authorization: "Bearer " + tk, "content-type": blob.type, "x-filename": encodeURIComponent(f.name), "x-width": String(w), "x-height": String(h) }, body: blob });
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok) { toast(b.error || "Upload failed.", true); continue; }
+    out.push(b);
+  }
+  status.textContent = "";
+  return out;
+}
+function uploader(onDone) {
+  const wrap = d.createElement("div");
+  wrap.innerHTML = `<div class="drop" id="drop"><p style="margin:0 0 .8rem">Drag photos here, or</p><label class="btn btn-gold" style="display:inline-flex;margin:0">Choose photos<input type="file" accept="image/*" multiple hidden></label><p class="hint">Photos are resized for the web automatically.</p></div><p class="uploading" aria-live="polite"></p>`;
+  const drop = $(".drop", wrap), input = $("input", wrap), st = $(".uploading", wrap);
+  const go = async (files) => { if (files.length) onDone(await uploadFiles(files, st)); };
+  input.onchange = () => go(input.files);
+  ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => go(e.dataTransfer.files));
+  return wrap;
+}
+async function viewPhotos() {
+  const m = $("#main");
+  m.innerHTML = `<div class="head"><h2>Photos</h2></div><p class="note">Only upload photos you have the right to use. If people can be identified, make sure they’re happy to appear on the website.</p><div id="up"></div><div class="mgrid" id="mgrid"><p class="status-line">Loading photos…</p></div>`;
+  $("#up").append(uploader(async (added) => { if (added.length) { toast(added.length === 1 ? "Photo uploaded." : `${added.length} photos uploaded.`); await render(); } }));
+  async function render() {
+    const { items } = await api("/api/media");
+    const g = $("#mgrid");
+    if (!items.length) { g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>No photos yet</b>Upload photos to use as post covers or inside posts.</div>`; return; }
+    g.innerHTML = items.map((x) => `<div class="mcard" data-key="${esc(x.key)}"><img src="${esc(x.url)}" alt="${esc(x.alt || "")}" loading="lazy"><div class="in">
+      <label class="hint" style="margin:0" for="alt-${esc(x.key)}">Description</label><input id="alt-${esc(x.key)}" type="text" value="${esc(x.alt || "")}" placeholder="What’s in this photo?" maxlength="200">
+      <div class="row"><button class="btn btn-sm" data-act="save">Save</button><button class="btn btn-sm" data-act="copy">Copy link</button><button class="btn btn-sm btn-danger" data-act="del">Delete</button></div><div class="cbox"></div></div></div>`).join("");
+    $$(".mcard", g).forEach((c) => {
+      const k = c.dataset.key;
+      $('[data-act="save"]', c).onclick = (e) => busy(e.currentTarget, "…", async () => { await api(`/api/media/${k}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ alt: $("input", c).value }) }); toast("Description saved."); }).catch((x) => toast(x.message, true));
+      $('[data-act="copy"]', c).onclick = async () => { const u = location.origin + "/media/" + k; try { await navigator.clipboard.writeText(u); toast("Link copied."); } catch { prompt("Copy this link:", u); } };
+      $('[data-act="del"]', c).onclick = () => {
+        $(".cbox", c).innerHTML = `<div class="confirm"><span>Delete this photo? Posts using it will show no image.</span><button class="btn btn-danger btn-sm">Delete</button><button class="btn btn-sm">Keep</button></div>`;
+        const [yes, no] = $$(".cbox button", c);
+        no.onclick = () => ($(".cbox", c).innerHTML = "");
+        yes.onclick = () => busy(yes, "…", async () => { await api(`/api/media/${k}`, { method: "DELETE" }); toast("Photo deleted."); c.remove(); }).catch((x) => toast(x.message, true));
+      };
+    });
+  }
+  await render();
+}
+function pickPhoto() {
+  return new Promise(async (resolve) => {
+    const modal = $("#modal"), mb = $("#modalBody");
+    const close = (v) => { modal.hidden = true; mb.innerHTML = ""; d.removeEventListener("keydown", esck); resolve(v); };
+    const esck = (e) => { if (e.key === "Escape") close(null); };
+    d.addEventListener("keydown", esck);
+    $("#modalClose").onclick = () => close(null);
+    modal.onclick = (e) => { if (e.target === modal) close(null); };
+    modal.hidden = false; mb.innerHTML = "";
+    mb.append(uploader((added) => { if (added[0]) close(added[0]); }));
+    const g = d.createElement("div"); g.className = "mgrid"; g.innerHTML = `<p class="status-line">Loading photos…</p>`; mb.append(g);
+    try {
+      const { items } = await api("/api/media");
+      g.innerHTML = items.length ? items.map((x) => `<button class="mcard pick" type="button" data-key="${esc(x.key)}" style="padding:0;color:inherit;text-align:left"><img src="${esc(x.url)}" alt="${esc(x.alt || "")}" loading="lazy"><span class="in hint">${esc(x.alt || "No description")}</span></button>`).join("") : `<p class="status-line">No photos yet. Upload one above.</p>`;
+      $$(".pick", g).forEach((b) => b.onclick = () => close(items.find((x) => x.key === b.dataset.key)));
+    } catch (e) { g.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  });
+}
+
+/* ----- Site notice ----- */
+async function viewNotice() {
+  const m = $("#main");
+  m.innerHTML = `<p class="status-line">Loading…</p>`;
+  const s = await (await fetch("/api/settings", { cache: "no-store" })).json().catch(() => ({ notice: {} }));
+  const n = s.notice || {};
+  m.innerHTML = `<div class="head"><h2>Site notice</h2></div>
+  <div class="panel" style="max-width:640px">
+    <p class="note">A one-line message across the top of every page, for things like an event, a launch or a deadline.</p>
+    <label class="switch"><input type="checkbox" id="non" ${n.on ? "checked" : ""}> Show the notice on the website</label>
+    <div class="field"><label for="ntext">Message</label><input id="ntext" type="text" maxlength="160" value="${esc(n.text || "")}" placeholder="e.g. Join us in Tralee on Saturday 14 November"></div>
+    <div class="field"><label for="nlink">Link <span class="hint" style="display:inline">(optional)</span></label><input id="nlink" type="url" value="${esc(n.link || "")}" placeholder="https://… or /news/your-post"><p class="hint">Must start with https:// or /</p></div>
+    <label>Preview</label><div class="notice-preview" id="npv"></div>
+    <div class="actions"><button class="btn btn-gold" id="nsave">Save notice</button></div>
+  </div>`;
+  const pv = () => { const t = $("#ntext").value.trim(); $("#npv").textContent = $("#non").checked && t ? t : "(The notice is switched off.)"; };
+  const np = $(".panel", m);
+  ["input", "change"].forEach((ev) => np.addEventListener(ev, () => { pv(); dirty = true; }));
+  pv();
+  $("#nsave").onclick = (e) => busy(e.currentTarget, "Saving…", async () => {
+    await api("/api/settings", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ notice: { on: $("#non").checked, text: $("#ntext").value, link: $("#nlink").value } }) });
+    dirty = false; toast("Notice saved. It updates on the site within a minute.");
+  }).catch((x) => toast(x.message, true));
+}
+
+/* ----- Account ----- */
+async function viewAccount() {
+  const m = $("#main");
+  m.innerHTML = `<div class="head"><h2>Account</h2></div>
+  <div class="panel" style="max-width:560px">
+    <p style="margin:0 0 1.2rem">Signed in as <b>${esc(session?.email || "")}</b></p>
+    <form id="pwForm" novalidate>
+      <h3 style="font-size:1.25rem;margin-bottom:.8rem">Change password</h3>
+      <div class="field"><label for="cp1">New password</label><input id="cp1" type="password" autocomplete="new-password"><p class="hint">At least 12 characters.</p></div>
+      <div class="field"><label for="cp2">Confirm new password</label><input id="cp2" type="password" autocomplete="new-password"></div>
+      <button class="btn btn-gold" type="submit">Change password</button><p class="err" id="pwErr" role="alert"></p>
+    </form>
+    <p class="hint" style="margin-top:1.4rem">To add or remove an admin, contact QF Digital.</p>
+  </div>`;
+  $("#pwForm").onsubmit = (e) => {
+    e.preventDefault(); const err = $("#pwErr"); err.textContent = "";
+    const a = $("#cp1").value, b = $("#cp2").value;
+    if (a.length < 12) { err.textContent = "Use at least 12 characters."; return; }
+    if (a !== b) { err.textContent = "The two passwords don’t match."; return; }
+    busy($("#pwForm button"), "Saving…", async () => {
+      await idFetch("/user", { method: "PUT", headers: { "content-type": "application/json", authorization: "Bearer " + (await token()) }, body: JSON.stringify({ password: a }) });
+      $("#cp1").value = $("#cp2").value = ""; toast("Password changed.");
+    }).catch((x) => (err.textContent = x.message));
+  };
+}
+
+/* ---------- boot ---------- */
+if (pending) {
+  showAuth("setpw");
+  if (pending.type === "recovery") { $("#setTitle").textContent = "Choose a new password"; $("#setSub").textContent = "Set a new password for your admin account."; }
+} else if (session) startApp();
+else showAuth("login");
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "eire-laidir-website",
+  "private": true,
+  "type": "module",
+  "description": "\u00c9ire L\u00e1idir website with admin area (QF Digital)",
+  "dependencies": {
+    "@netlify/blobs": ">=8.1.0 <12"
+  }
+}

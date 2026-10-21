@@ -2,40 +2,12 @@
 //   /news          list of published posts
 //   /news/:slug    one post
 import { posts, handle, readIndex, renderMarkdown, escapeHtml as esc } from "../../lib/core.mjs";
-import { PAGE, SITE_URL, INDEXABLE } from "../../lib/template.mjs";
-
-const fmtDate = (iso) => {
-  try { return new Date(iso).toLocaleDateString("en-IE", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Dublin" }); }
-  catch { return ""; }
-};
-const abs = (p) => (SITE_URL ? SITE_URL + p : p);
-
-function page({ title, desc, path, main, image, jsonld, status = 200 }) {
-  const img = image ? abs(image) : abs("/og-image.jpg");
-  const head = [
-    `<title>${esc(title)}</title>`,
-    `<meta name="description" content="${esc(desc)}">`,
-    `<meta name="robots" content="${INDEXABLE ? "index, follow, max-image-preview:large" : "noindex, nofollow"}">`,
-    SITE_URL ? `<link rel="canonical" href="${esc(abs(path))}">` : "",
-    `<meta property="og:type" content="${jsonld ? "article" : "website"}">`,
-    `<meta property="og:site_name" content="Éire Láidir">`,
-    `<meta property="og:title" content="${esc(title)}">`,
-    `<meta property="og:description" content="${esc(desc)}">`,
-    `<meta property="og:image" content="${esc(img)}">`,
-    `<meta property="og:locale" content="en_IE">`,
-    `<meta name="twitter:card" content="summary_large_image">`,
-    jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>` : "",
-  ].filter(Boolean).join("\n");
-  return new Response(PAGE.replace("{{HEAD}}", head).replace("{{MAIN}}", main), {
-    status,
-    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=30" },
-  });
-}
+import { page, fmtDate, abs } from "../../lib/page.mjs";
 
 const card = (p) => `
-      <article class="ncard">
+      <article class="ncard${p.cover ? "" : " noimg"}">
         <a href="/news/${esc(p.slug)}" class="ncard-link">
-          <div class="ncard-img">${p.cover ? `<img src="/media/${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" loading="lazy" decoding="async">` : `<span class="ncard-ph" aria-hidden="true"></span>`}</div>
+          ${p.cover ? `<div class="ncard-img"><img src="/media/${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" loading="lazy" decoding="async"></div>` : ""}
           <div class="ncard-body">
             <p class="nmeta"><span class="npill">${esc(p.category)}</span><time datetime="${esc(p.publishedAt || "")}">${esc(fmtDate(p.publishedAt))}</time></p>
             <h2>${esc(p.title)}</h2>
@@ -49,6 +21,7 @@ export default handle(async (req, context) => {
 
   if (!slug) {
     const items = (await readIndex()).filter((p) => p.status === "published");
+    if (!items.length) return new Response(null, { status: 302, headers: { location: "/", "cache-control": "no-store" } });
     const main = `<main class="ppage-main" id="top">
   <section class="ppage-hero" aria-labelledby="h-news">
     <div class="wrap">
@@ -90,6 +63,11 @@ export default handle(async (req, context) => {
     <div class="wrap npost">
       ${post.cover ? `<figure class="ncover"><img src="/media/${esc(post.cover)}" alt="${esc(post.coverAlt || "")}" decoding="async" fetchpriority="high"></figure>` : ""}
       <div class="nbody">${renderMarkdown(post.body)}</div>
+      <aside class="nsupport" aria-labelledby="h-support">
+        <h2 id="h-support">Support Éire Láidir</h2>
+        <p>Join the party, volunteer in your area, or help fund the campaign.</p>
+        <div class="pcta"><a class="btn btn-gold" href="/#join">Join Éire Láidir</a><a class="btn btn-line don-only" href="/#donate">Donate</a></div>
+      </aside>
       <p class="nback"><a href="/news">← All news</a></p>
     </div>
   </article>

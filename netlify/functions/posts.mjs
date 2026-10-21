@@ -1,13 +1,13 @@
 // Posts API.
 //   GET    /api/posts            public: published posts (summaries). ?limit=3
+//                                 ?home=1  only posts placed on the home page, pinned first
+//                                 ?policy=<slug>  only posts placed on that policy page
 //   GET    /api/posts?all=1      admin: every post including drafts
 //   GET    /api/posts/:id        admin: one post in full
 //   POST   /api/posts            admin: create
 //   PUT    /api/posts/:id        admin: update
 //   DELETE /api/posts/:id        admin: delete
-import { posts, json, fail, handle, requireAdmin, newId, slugify, rebuildIndex, readIndex, CATEGORIES } from "../../lib/core.mjs";
-
-const clean = (s, max) => String(s ?? "").replace(/\u0000/g, "").trim().slice(0, max);
+import { posts, json, fail, handle, requireAdmin, newId, slugify, rebuildIndex, readIndex, CATEGORIES, POLICY_SLUGS, mediaKey, clean } from "../../lib/core.mjs";
 
 function validate(input) {
   const title = clean(input.title, 140);
@@ -18,8 +18,12 @@ function validate(input) {
     title, category, status,
     excerpt: clean(input.excerpt, 300),
     body: clean(input.body, 50000),
-    cover: /^[a-z0-9]+\.(webp|jpg|png)$/.test(input.cover || "") ? input.cover : "",
+    cover: mediaKey(input.cover),
     coverAlt: clean(input.coverAlt, 200),
+    // where the post appears besides the News page
+    home: input.home !== false,
+    pinned: !!input.pinned,
+    policies: [...new Set((Array.isArray(input.policies) ? input.policies : []).filter((x) => POLICY_SLUGS.includes(x)))],
   };
 }
 
@@ -37,7 +41,11 @@ export default handle(async (req, context) => {
 
   if (req.method === "GET" && !id && !url.searchParams.has("all")) {
     const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "50", 10) || 50, 1), 100);
-    const items = (await readIndex()).filter((p) => p.status === "published").slice(0, limit);
+    let items = (await readIndex()).filter((p) => p.status === "published");
+    if (url.searchParams.get("home") === "1") items = items.filter((p) => p.home).sort((a, b) => Number(b.pinned) - Number(a.pinned));
+    const pol = url.searchParams.get("policy");
+    if (pol) items = items.filter((p) => p.policies.includes(pol));
+    items = items.slice(0, limit);
     return json({ items }, 200, { "cache-control": "public, max-age=30" });
   }
 

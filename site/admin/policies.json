@@ -1,0 +1,57 @@
+[
+ {
+  "slug": "national-insurance",
+  "num": 1,
+  "title": "NATIONAL INSURANCE"
+ },
+ {
+  "slug": "economic-resilience",
+  "num": 2,
+  "title": "ECONOMIC RESILIENCE"
+ },
+ {
+  "slug": "energy-independence",
+  "num": 3,
+  "title": "ENERGY INDEPENDENCE"
+ },
+ {
+  "slug": "development-banking",
+  "num": 4,
+  "title": "DEVELOPMENT BANKING"
+ },
+ {
+  "slug": "food-security",
+  "num": 5,
+  "title": "FOOD SECURITY & DISTRIBUTION"
+ },
+ {
+  "slug": "public-safety",
+  "num": 6,
+  "title": "PUBLIC SAFETY & PUBLIC SPACES"
+ },
+ {
+  "slug": "expenditure-reform",
+  "num": 7,
+  "title": "PUBLIC EXPENDITURE REFORM"
+ },
+ {
+  "slug": "migration-integration",
+  "num": 8,
+  "title": "MANAGED MIGRATION, INTEGRATION & CONTRIBUTION"
+ },
+ {
+  "slug": "bringing-ireland-home",
+  "num": 9,
+  "title": "BRINGING IRELAND HOME"
+ },
+ {
+  "slug": "migration-residency",
+  "num": 10,
+  "title": "MANAGED MIGRATION, RESIDENCY & EMPLOYMENT"
+ },
+ {
+  "slug": "electoral-honesty",
+  "num": 12,
+  "title": "ELECTORAL HONESTY & POLITICAL ACCOUNTABILITY"
+ }
+]

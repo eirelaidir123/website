@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="don-on">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -418,6 +418,92 @@ details.sec > summary .plus{display:none}
 .foot small{display:block;margin-top:.3rem;color:var(--mute)}
 
 
+/* Home: banner photo (set in admin) */
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease;pointer-events:none}
+.hero.has-bg .hero-bg{opacity:.34}
+.hero.has-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,12,10,.94) 0%,rgba(9,12,10,.74) 50%,rgba(9,12,10,.5) 100%);pointer-events:none}
+.hero.has-bg .hero-grid{z-index:1}
+
+/* Home: featured spotlight (set in admin) */
+.spot{border-bottom:1px solid var(--gold-line);background:linear-gradient(180deg,rgba(217,169,60,.05),transparent 70%)}
+.spot-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:3.5rem;align-items:center;padding-block:3.6rem}
+.spot-grid.no-img{grid-template-columns:minmax(0,1fr);max-width:52rem}
+.spot-media{margin:0;aspect-ratio:16/10;overflow:hidden;border:1px solid var(--gold-line);background:var(--ink-3)}
+.spot-media img{width:100%;height:100%;object-fit:cover;display:block}
+.spot h2{font-size:clamp(1.9rem,3.3vw,2.8rem);margin:1rem 0 .9rem}
+.spot-text{color:var(--mute);font-size:1.08rem;max-width:32rem;margin:0 0 1.6rem}
+@media (max-width:900px){
+  .spot-grid{grid-template-columns:minmax(0,1fr);gap:1rem;padding-block:1.2rem 1.5rem}
+  .spot-media{aspect-ratio:16/9}
+  .spot h2{font-size:1.5rem;margin:.5rem 0 .45rem}
+  .spot-text{font-size:.95rem;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .spot .btn{width:100%}
+}
+
+/* Gallery */
+.gal{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
+.gal li{margin:0;min-width:0}
+.gal-btn,.gal a{display:block;width:100%;padding:0;border:0;background:var(--ink-3);cursor:zoom-in;aspect-ratio:1;overflow:hidden;border-radius:2px}
+.gal a{cursor:pointer}
+.gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.gal-btn:hover img,.gal a:hover img{transform:scale(1.04)}
+.gal-wrap{padding-block:2.4rem 3rem}
+.gal-strip{grid-template-columns:repeat(var(--n,6),minmax(0,1fr))}
+.gal-meta{color:var(--mute);font-size:.9rem;margin:-.6rem 0 1.4rem}
+.gcard .ncard-img{aspect-ratio:4/3}
+dialog.lb{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:rgba(5,7,6,.97);color:var(--cream);overflow:hidden}
+dialog.lb::backdrop{background:rgba(0,0,0,.85)}
+.lb-fig{margin:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;padding:60px 84px 40px}
+.lb-fig img{max-width:100%;max-height:calc(100dvh - 150px);object-fit:contain;display:block}
+.lb-fig figcaption{color:#d9d2c0;font-size:.95rem;text-align:center;max-width:46rem}
+.lb-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:.6rem max(12px,env(safe-area-inset-right,0px)) .6rem max(16px,env(safe-area-inset-left,0px));font-size:.85rem;color:var(--mute);z-index:2}
+.lb-x{font-size:2rem;line-height:1;background:none;border:0;color:var(--cream);width:48px;height:48px;cursor:pointer}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:72px;background:rgba(255,255,255,.05);border:1px solid var(--gold-line);color:var(--cream);font-size:2rem;line-height:1;cursor:pointer;border-radius:2px}
+.lb-nav:hover{border-color:var(--gold)}
+.lb-prev{left:14px}.lb-next{right:14px}
+@media (max-width:900px){
+  .gal{grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem}
+  .gal-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .gal-strip li.cut{display:none}
+  .gal-wrap{padding-block:1.2rem 2rem}
+  .gal-meta{margin:-.3rem 0 .9rem;font-size:.85rem}
+  .lb-fig{padding:56px 6px 84px}
+  .lb-fig img{max-height:calc(100dvh - 170px)}
+  .lb-nav{top:auto;bottom:max(14px,env(safe-area-inset-bottom,0px));transform:none;width:64px;height:48px}
+  .lb-prev{left:calc(50% - 72px)}.lb-next{right:calc(50% - 72px)}
+}
+
+/* Policy pages: posts placed on this policy (set in admin) */
+.pol-news{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--gold-line)}
+.pol-news h2{font-size:1.6rem;margin-bottom:1.1rem}
+.pol-news .ngrid{grid-template-columns:minmax(0,1fr);gap:.8rem}
+.pol-news .ncard-link{flex-direction:row}
+.pol-news .ncard-img{aspect-ratio:auto;width:min(34%,220px);flex:none;min-height:110px}
+@media (max-width:900px){.pol-news{margin-top:1.6rem;padding-top:1.2rem}.pol-news h2{font-size:1.3rem;margin-bottom:.8rem}}
+
+/* Donations: every Donate button carries .don-only and disappears if admins switch donations off */
+html:not(.don-on) .don-only{display:none!important}
+nav.main .btn.btn-line{color:var(--cream)}
+nav.main .nav-don{margin-right:-.4rem}
+.join-don{margin-top:1.6rem;color:var(--mute);font-size:.95rem}
+.join-don a{color:var(--gold-hi)}
+.nsupport{margin-top:2.6rem;padding:1.6rem;border:1px solid var(--gold-line);background:var(--ink-2);display:grid;gap:1rem;max-width:46rem}
+.nsupport h2{font-size:1.5rem;margin:0}
+.nsupport p{margin:0;color:var(--mute)}
+.nsupport .pcta{display:flex;flex-wrap:wrap;gap:.8rem;margin:0}
+@media (max-width:900px){.nsupport{padding:1.2rem;margin-top:1.8rem}.nsupport .btn{flex:1 1 9rem}}
+.donate{border-top:1px solid var(--gold-line)}
+.donate-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:4.5rem;align-items:start}
+.donate h2{font-size:clamp(2.1rem,3.8vw,3.3rem);margin-top:1.2rem}
+.donate .intro{color:var(--mute);margin-top:1.2rem;max-width:30rem}
+.donate-card{background:var(--ink-2);border:1px solid var(--gold-line);padding:2rem;display:grid;gap:1.2rem;border-radius:2px}
+.don-btns{display:flex;flex-wrap:wrap;gap:.8rem}
+.don-btns .btn{flex:1 1 12rem}
+.don-btns .btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.don-small{font-size:.8rem;color:var(--mute);line-height:1.55}
+.don-soon{font-family:var(--display);font-size:1.5rem;color:var(--gold-hi)}
+@media (max-width:900px){.donate-grid{grid-template-columns:1fr;gap:1.4rem}.donate-card{padding:1.3rem}}
+
 /* News */
 [hidden]{display:none!important}
 .ngrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.4rem}
@@ -426,6 +512,7 @@ details.sec > summary .plus{display:none}
 .ncard-link{display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit}
 .ncard-img{aspect-ratio:16/10;background:var(--ink-3);overflow:hidden}
 .ncard-img img{width:100%;height:100%;object-fit:cover;display:block}
+.ncard.noimg .ncard-body{padding:1.4rem 1.4rem 1.5rem;border-top:2px solid var(--gold)}
 .ncard-ph{display:block;width:100%;height:100%;background:radial-gradient(ellipse at 30% 30%,rgba(217,169,60,.18),transparent 60%),linear-gradient(160deg,#0E2A1C,#0A1611)}
 .ncard-body{padding:1.1rem 1.2rem 1.3rem;display:grid;gap:.5rem}
 .ncard h2,.ncard h3{font-family:var(--display);font-weight:400;font-size:1.3rem;line-height:1.25;color:var(--cream)}
@@ -584,8 +671,8 @@ footer.site{border-top:1px solid var(--gold-line);padding-block:2.6rem calc(2.6r
         <button class="dd-btn" type="button" aria-expanded="false" aria-controls="dd-panel">Policies <span class="pm" aria-hidden="true"></span></button>
         <div class="dd-panel" id="dd-panel"><a href="../../policies/national-insurance/"><b>1</b>NATIONAL INSURANCE</a><a href="../../policies/economic-resilience/"><b>2</b>ECONOMIC RESILIENCE</a><a href="../../policies/energy-independence/"><b>3</b>ENERGY INDEPENDENCE</a><a href="../../policies/development-banking/"><b>4</b>DEVELOPMENT BANKING</a><a href="../../policies/food-security/"><b>5</b>FOOD SECURITY &amp; DISTRIBUTION</a><a href="../../policies/public-safety/"><b>6</b>PUBLIC SAFETY &amp; PUBLIC SPACES</a><a href="../../policies/expenditure-reform/"><b>7</b>PUBLIC EXPENDITURE REFORM</a><a href="../../policies/migration-integration/"><b>8</b>MANAGED MIGRATION, INTEGRATION &amp; CONTRIBUTION</a><a href="../../policies/bringing-ireland-home/"><b>9</b>BRINGING IRELAND HOME</a><a href="../../policies/migration-residency/"><b>10</b>MANAGED MIGRATION, RESIDENCY &amp; EMPLOYMENT</a><a href="../../policies/electoral-honesty/" aria-current="page"><b>12</b>ELECTORAL HONESTY &amp; POLITICAL ACCOUNTABILITY</a><a class="dd-all" href="../../#policies">All policies and the framework</a></div>
       </div>
-      <a href="/news">News</a><a href="../../#contact">Contact</a>
-      <a class="btn btn-gold" href="../../#join">Join us</a>
+      <a href="/news" data-has="news" hidden>News</a><a href="/gallery" data-has="gallery" hidden>Gallery</a><a href="../../#contact">Contact</a>
+      <a class="btn btn-line nav-don don-only" href="/#donate">Donate</a><a class="btn btn-gold" href="../../#join">Join us</a>
     </nav>
   </div>
 </header>
@@ -667,8 +754,12 @@ footer.site{border-top:1px solid var(--gold-line);padding-block:2.6rem calc(2.6r
 <h3 class="pl" id="electoral-honesty-14">POLICY NOTE</h3>
 <p class="pf">This is a proposed policy framework. Any new legal duties, offences or penalties would require detailed legal drafting, constitutional review, public consultation and assessment of compatibility with Irish and EU law. Existing statutory provisions and their commencement status should be verified before legislation is prepared.</p>
 </section>
+      <section class="pol-news" id="polNews" aria-labelledby="pn-h" hidden>
+        <h2 id="pn-h">Latest on this policy</h2>
+        <div class="ngrid" id="polNewsGrid"></div>
+      </section>
       <nav class="pnav" aria-label="More policies"><a href="../../policies/migration-residency/"><small>Previous policy</small><span>10 · MANAGED MIGRATION, RESIDENCY &amp; EMPLOYMENT</span></a><a class="nx" href="../../#road-ahead"><small>Next</small><span>The road ahead</span></a></nav>
-      <div class="pcta"><a class="btn btn-gold" href="../../#join">Join Éire Láidir <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6"/></svg></a><a class="btn btn-line" href="../../#policies">All policies</a></div>
+      <div class="pcta"><a class="btn btn-gold" href="../../#join">Join Éire Láidir <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6"/></svg></a><a class="btn btn-line don-only" href="/#donate">Donate</a><a class="btn btn-line" href="../../#policies">All policies</a></div>
     </div>
   </div>
 </main>
@@ -678,14 +769,15 @@ footer.site{border-top:1px solid var(--gold-line);padding-block:2.6rem calc(2.6r
     <span class="lg lg-foot"><img src="../../logo-420.webp" alt="Éire Láidir" width="420" height="369" decoding="async" loading="lazy"><span class="sheen" aria-hidden="true"></span></span>
     <a class="social foot-fb" href="https://www.facebook.com/share/1BsfcWYGgj/" target="_blank" rel="noopener" aria-label="Éire Láidir on Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.6V21h2.9z"/></svg></a>
     <nav aria-label="Footer">
-      <a href="../../#vision">Vision</a><a href="../../#policies">Policies</a><a href="../../#join">Join</a><a href="/news">News</a><a href="../../#contact">Contact</a><a href="../../privacy/">Privacy notice</a><a href="/admin/">Admin sign in</a>
+      <a href="../../#vision">Vision</a><a href="../../#policies">Policies</a><a href="../../#join">Join</a><a href="/news" data-has="news" hidden>News</a><a href="/gallery" data-has="gallery" hidden>Gallery</a><a href="../../#contact">Contact</a><a href="../../privacy/">Privacy notice</a><a class="don-only" href="/#donate">Donate</a><a href="/admin/">Admin sign in</a>
     </nav>
-    <p>© 2026 Éire Láidir. Demonstration website by QF Digital.<small>No cookies or tracking on this site.</small></p>
+    <p>© 2026 Éire Láidir. Website by <a href="https://qf-digital.netlify.app" target="_blank" rel="noopener" style="color:var(--gold-hi)">QF Digital</a>.<small>No cookies or tracking on this site.</small></p>
   </div>
 </footer>
 
 <div class="mbar" id="mbar" aria-hidden="true">
   <a class="btn btn-gold" href="../../#join" tabindex="-1">Join Éire Láidir</a>
+  <a class="btn btn-line don-only" href="/#donate" tabindex="-1">Donate</a>
 </div>
 
 <script>
@@ -803,12 +895,36 @@ footer.site{border-top:1px solid var(--gold-line);padding-block:2.6rem calc(2.6r
 })();
 </script>
 <script>
-/* Site notice, set by admins in /admin. */
-(function(){var bar=document.querySelector('.notice');if(!bar)return;
-fetch('/api/settings').then(function(r){return r.ok?r.json():null}).then(function(s){var n=s&&s.notice;
-if(n&&n.on&&n.text){bar.textContent='';var el;if(n.link){el=document.createElement('a');el.href=n.link;el.style.color='inherit';}else{el=document.createElement('span');}
-el.textContent=n.text;bar.appendChild(el);bar.hidden=false;bar.classList.add('notice-live');}
+/* Site notice and Donations, both set by admins in /admin. */
+(function(){
+window.__els=fetch('/api/settings').then(function(r){return r.ok?r.json():null}).catch(function(){return null});
+window.__els.then(function(s){if(!s)return;
+var has=s.has||{};document.querySelectorAll('[data-has]').forEach(function(a){if(has[a.getAttribute('data-has')])a.hidden=false;});
+var n=s.notice,bar=document.querySelector('.notice');
+if(bar&&n&&n.on&&n.text){bar.textContent='';var el;if(n.link){el=document.createElement('a');el.href=n.link;el.style.color='inherit';}else{el=document.createElement('span');}el.textContent=n.text;bar.appendChild(el);bar.hidden=false;}
+var dn=s.donate||{};
+if(dn.on===false){document.documentElement.classList.remove('don-on');return;}
+var sec=document.getElementById('donate');if(!sec)return;
+if(dn.intro)document.getElementById('donateIntro').textContent=dn.intro;
+if(dn.link){var once=document.getElementById('donOnce'),mon=document.getElementById('donMonthly'),box=document.getElementById('donElig');
+once.href=dn.link;if(dn.monthly){mon.href=dn.monthly;mon.hidden=false;}
+var sync=function(){[once,mon].forEach(function(a){a.setAttribute('aria-disabled',box.checked?'false':'true');a.tabIndex=box.checked?0:-1;});};
+box.addEventListener('change',sync);sync();document.getElementById('donateReady').hidden=false;}
+else document.getElementById('donateSoon').hidden=false;
 }).catch(function(){});})();
+</script>
+<script>
+/* Posts the admins have placed on this policy page. Shown only once their photos have loaded. */
+(function(){var sec=document.getElementById('polNews');if(!sec)return;var m=location.pathname.match(/\/policies\/([a-z0-9-]+)/);if(!m)return;
+function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function dt(i){try{return new Date(i).toLocaleDateString('en-IE',{day:'numeric',month:'long',year:'numeric'})}catch(x){return''}}
+/* wait until every photo in a block has loaded; drop any that fail, so nothing shows as an empty box */
+function ready(box,cb){var im=[].slice.call(box.querySelectorAll('img')),left=im.length,done=false;
+function fin(){if(done)return;done=true;im.forEach(function(i){if(!(i.complete&&i.naturalWidth)){var c=i.closest('.ncard');var w=i.closest('li,.ncard-img');if(w)w.remove();if(c)c.classList.add('noimg');}});cb();}
+if(!left)return fin();im.forEach(function(i){if(i.complete&&i.naturalWidth){if(!--left)fin();}else{var f=function(){if(!--left)fin()};i.addEventListener('load',f);i.addEventListener('error',f);}});setTimeout(fin,6000);}
+function card(p){return '<article class="ncard'+(p.cover?'':' noimg')+'"><a class="ncard-link" href="/news/'+e(p.slug)+'">'+(p.cover?'<div class="ncard-img"><img src="/media/'+e(p.cover)+'" alt="'+e(p.coverAlt)+'" decoding="async"></div>':'')+'<div class="ncard-body"><p class="nmeta"><span class="npill">'+e(p.category)+'</span><time datetime="'+e(p.publishedAt)+'">'+e(dt(p.publishedAt))+'</time></p><h3>'+e(p.title)+'</h3>'+(p.excerpt?'<p class="nex">'+e(p.excerpt)+'</p>':'')+'</div></a></article>'}
+fetch('/api/posts?limit=3&policy='+m[1]).then(function(r){return r.ok?r.json():null}).then(function(d){if(!d||!d.items||!d.items.length)return;
+var g=document.getElementById('polNewsGrid');g.innerHTML=d.items.map(card).join('');ready(g,function(){sec.hidden=false;});}).catch(function(){});})();
 </script>
 </body>
 </html>
